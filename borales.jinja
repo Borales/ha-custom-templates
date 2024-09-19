@@ -1,4 +1,118 @@
+{#############################}
+{###### Shared macros ######}
+
 {# Get the real "last changed" state #}
 {% macro get_last_changed(entity_id) %}
 {{ state_attr('sensor.last_changed', 'changes')[entity_id] | as_datetime | time_since }}
+{% endmacro %}
+
+{#############################}
+{###### Window macros ######}
+
+{% macro get_window_status(entity_id) %}
+{{ iif(is_state(entity_id, 'on'), 'Open', 'Closed') }}
+{% endmacro %}
+
+{% macro get_window_subtitle(entity_id) %}
+{{ get_window_status(entity_id) }} {{ get_last_changed(entity_id) }} ago
+{% endmacro %}
+
+{% macro get_window_icon_color(entity_id) %}
+{{ iif(is_state(entity_id, 'on'), 'lime', '') }}
+{% endmacro %}
+
+{% macro get_window_icon(entity_id) %}
+{{ iif(is_state(entity_id, 'on'), 'mdi:door-open', 'mdi:door-closed') }}
+{% endmacro %}
+
+{#############################}
+{###### Motion macros ######}
+
+{% macro get_motion_status(entity_id) %}
+{{ iif(is_state(entity_id, 'on'), 'Occupied', 'Clear') }}
+{% endmacro %}
+
+{% macro get_motion_subtitle(entity_id) %}
+{{ get_motion_status(entity_id) }} {{ get_last_changed(entity_id) }} ago
+{% endmacro %}
+
+{% macro get_motion_icon_color(entity_id) %}
+{{ iif(is_state(entity_id, 'on'), 'yellow', '') }}
+{% endmacro %}
+
+{% macro get_motion_icon() %}
+mdi:motion-sensor
+{% endmacro %}
+
+{###########################}
+{###### Lock macros ######}
+
+{# Get lock status
+- 'open'
+- 'closed'
+- 'semi-locked'
+- 'locked
+#}
+{% macro get_lock_status(lock_entity, semi_locked_entity, sensor_entity) %}
+{% if is_state(sensor_entity, 'on') %}
+  Open
+{% else %}
+  {% if is_state(lock_entity, 'locked') %}
+    Locked
+  {% elif is_state(semi_locked_entity, 'on') %}
+    Semi-locked
+  {% else %}
+    Unlocked
+  {% endif %}
+{% endif %}
+{% endmacro %}
+
+{# Get lock subtitle based on the state of lock and sensor #}
+{% macro get_lock_subtitle(lock_entity, semi_locked_entity, sensor_entity) %}
+{{ get_lock_status(lock_entity, semi_locked_entity, sensor_entity) }}
+{% if is_state(lock_entity, 'locked') or is_state(semi_locked_entity, 'on') %}
+{{ get_last_changed(lock_entity) }}
+{% else %}
+{{ get_last_changed(sensor_entity) }}
+{% endif %} ago
+{% endmacro %}
+
+{# Get lock icon based on the state of lock and sensor:
+'open door' if sensor is open
+'open lock'
+'semi open lock'
+'locked lock'
+#}
+{% macro get_lock_icon(lock_entity, semi_locked_entity, sensor_entity)%}
+{% if is_state(sensor_entity, 'on') %}
+mdi:door-open
+{% else %}
+  {% if is_state(lock_entity, 'locked') %}
+    mdi:lock
+  {% elif is_state(semi_locked_entity, 'on') %}
+    mdi:lock-open
+  {% else %}
+    mdi:lock-open-variant
+  {% endif %}
+{% endif %}
+{% endmacro %}
+
+{# Get lock color based on the state of lock and sensor
+'red' if sensor is open
+'orange' if sensor is closed and lock is unlocked
+'yellow' if sensor is closed and lock is semi-locked
+'green' if sensor is closed and lock is fully closed
+#}
+{% macro get_lock_icon_color(lock_entity, semi_locked_entity, sensor_entity) %}
+{% if is_state(sensor_entity, 'on') %}
+red
+{% else %}
+  {% if is_state(lock_entity, 'locked') %}
+    green
+  {% elif is_state(semi_locked_entity, 'on') %}
+    yellow
+  {% else %}
+    orange
+  {% endif %}
+{% endif %}
 {% endmacro %}

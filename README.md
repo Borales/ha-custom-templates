@@ -1,2 +1,1 @@
-# ha-custom-templates
-
+# Personal collection of HACS macros
