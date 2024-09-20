@@ -3,7 +3,9 @@
 
 {# Get the real "last changed" state #}
 {% macro get_last_changed(entity_id) %}
-{{ state_attr('sensor.last_changed', 'changes')[entity_id] | as_datetime | time_since }}
+{% if entity_id in state_attr('sensor.last_changed', 'changes') %}
+  {{ state_attr('sensor.last_changed', 'changes')[entity_id] | as_datetime | time_since }}
+{% endif %}
 {% endmacro %}
 
 {#############################}
