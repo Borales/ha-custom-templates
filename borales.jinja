@@ -8,6 +8,14 @@
 {% endif %}
 {% endmacro %}
 
+{# Get the real "last changed" state with "ago" suffix #}
+{% macro get_last_changed_ago(entity_id) %}
+{% set last_changed = get_last_changed(entity_id) | trim %}
+{% if last_changed != '' %}
+  {{ last_changed }} ago
+{% endif %}
+{% endmacro %}
+
 {#############################}
 {###### Window macros ######}
 
@@ -16,7 +24,7 @@
 {% endmacro %}
 
 {% macro get_window_subtitle(entity_id) %}
-{{ get_window_status(entity_id) }} {{ get_last_changed(entity_id) }} ago
+{{ get_window_status(entity_id) }} {{ get_last_changed_ago(entity_id) }}
 {% endmacro %}
 
 {% macro get_window_icon_color(entity_id) %}
@@ -35,7 +43,7 @@
 {% endmacro %}
 
 {% macro get_motion_subtitle(entity_id) %}
-{{ get_motion_status(entity_id) }} {{ get_last_changed(entity_id) }} ago
+{{ get_motion_status(entity_id) }} {{ get_last_changed_ago(entity_id) }}
 {% endmacro %}
 
 {% macro get_motion_icon_color(entity_id) %}
@@ -73,10 +81,10 @@ mdi:motion-sensor
 {% macro get_lock_subtitle(lock_entity, semi_locked_entity, sensor_entity) %}
 {{ get_lock_status(lock_entity, semi_locked_entity, sensor_entity) }}
 {% if is_state(lock_entity, 'locked') or is_state(semi_locked_entity, 'on') %}
-{{ get_last_changed(lock_entity) }}
+{{ get_last_changed_ago(lock_entity) }}
 {% else %}
-{{ get_last_changed(sensor_entity) }}
-{% endif %} ago
+{{ get_last_changed_ago(sensor_entity) }}
+{% endif %}
 {% endmacro %}
 
 {# Get lock icon based on the state of lock and sensor:
