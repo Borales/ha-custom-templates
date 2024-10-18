@@ -80,8 +80,10 @@ mdi:motion-sensor
 {# Get lock subtitle based on the state of lock and sensor #}
 {% macro get_lock_subtitle(lock_entity, semi_locked_entity, sensor_entity) %}
 {{ get_lock_status(lock_entity, semi_locked_entity, sensor_entity) }}
-{% if is_state(lock_entity, 'locked') or is_state(semi_locked_entity, 'on') %}
-{{ get_last_changed_ago(lock_entity) }}
+{% if is_state(lock_entity, 'locked') %}
+{{ states[lock_entity].last_changed | as_datetime | time_since }}
+{% elif is_state(semi_locked_entity, 'on') %}
+{{ get_last_changed_ago(semi_locked_entity) }}
 {% else %}
 {{ get_last_changed_ago(sensor_entity) }}
 {% endif %}
