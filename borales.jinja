@@ -81,7 +81,7 @@ mdi:motion-sensor
 {% macro get_lock_subtitle(lock_entity, semi_locked_entity, sensor_entity) %}
 {{ get_lock_status(lock_entity, semi_locked_entity, sensor_entity) }}
 {% if is_state(lock_entity, 'locked') %}
-{{ states[lock_entity].last_changed | as_datetime | time_since }}
+{{ states[lock_entity].last_changed | as_datetime | time_since }} ago
 {% elif is_state(semi_locked_entity, 'on') %}
 {{ get_last_changed_ago(semi_locked_entity) }}
 {% else %}
