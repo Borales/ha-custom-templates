@@ -128,3 +128,41 @@ red
   {% endif %}
 {% endif %}
 {% endmacro %}
+
+{############################}
+{###### Battery macros ######}
+
+{# Get battery color based on the battery level
+'green' if battery >= 70
+'orange' if battery >= 30
+'red' if battery < 30
+#}
+{% macro get_battery_color(entity) %}
+{% set battery = states(entity) | int %}
+{% if battery >= 70 %}
+  green
+{% elif battery >= 30 %}
+  orange
+{% else %}
+  red
+{% endif %}
+{% endmacro %}
+
+{# Get battery icon based on the battery level
+use "icon" attribute of the entity if available
+otherwise use "mdi:battery-xx" (where xx is floored down to 10) icon where xx is the battery level
+or use "mdi:battery-charging-xx" if the charging entity is on
+#}
+{% macro get_battery_icon(entity, is_charging) %}
+{% set is_charging = is_charging | default(false) %}
+{% set battery = states(entity) | int %}
+{% if state_attr(entity, 'icon') %}
+  {{ state_attr(entity, 'icon') }}
+{% else %}
+  {% if is_charging %}
+    mdi:battery-charging-{{ battery // 10 * 10 }}
+  {% else %}
+    mdi:battery-{{ battery // 10 * 10 }}
+  {% endif %}
+{% endif %}
+{% endmacro %}
