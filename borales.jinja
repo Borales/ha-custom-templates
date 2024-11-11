@@ -162,7 +162,11 @@ or use "mdi:battery-charging-xx" if the charging entity is on
   {% if is_charging %}
     mdi:battery-charging-{{ battery // 10 * 10 }}
   {% else %}
-    mdi:battery-{{ battery // 10 * 10 }}
+    {% if battery < 100 %}
+      mdi:battery-{{ battery // 10 * 10 }}
+    {% else %}
+      mdi:battery
+    {% endif %}
   {% endif %}
 {% endif %}
 {% endmacro %}
